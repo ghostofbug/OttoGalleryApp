@@ -6,6 +6,8 @@
 	<string>Your data will be used to deliver personalized promos and offers to you</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+    <key>SERVER_CLIENT_ID</key>
+    <string>[YOUR SERVER CLIENT ID]</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -64,7 +66,6 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>${Reverse_ID}</string>
-				<string>fb${facebook_app_id}</string>
 			</array>
 		</dict>
 	</array>

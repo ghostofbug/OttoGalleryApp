@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "219928089345",
+    "firebase_url": "https://galleryapptest-d327e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "galleryapptest-d327e",
+    "storage_bucket": "galleryapptest-d327e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219928089345:android:fa0902aebaa879e081c100",
+        "android_client_info": {
+          "package_name": "com.otto.gallery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219928089345-u5hia0kic7qhluprdta77qldoluto9n2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC009e6KOM_JZ82lzK7QN_2A0SEITamElM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219928089345-nf22m4dihlap8c2bcq57vppt3i5dju5a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "219928089345-3d35uh45ojqeqn184alahv2jh3u9v754.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.otto.galleryapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219928089345:android:aaa116d8f2f68c1b81c100",
+        "android_client_info": {
+          "package_name": "com.otto.gallery.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219928089345-u5hia0kic7qhluprdta77qldoluto9n2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC009e6KOM_JZ82lzK7QN_2A0SEITamElM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219928089345-nf22m4dihlap8c2bcq57vppt3i5dju5a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "219928089345-3d35uh45ojqeqn184alahv2jh3u9v754.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.otto.galleryapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

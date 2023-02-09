@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/colors.dart';
 import 'package:gallery_app/image_detail/view/image_detail_view.dart';
+import 'package:gallery_app/login/view/login_page.dart';
+import 'package:gallery_app/login/view/sign_up_page.dart';
 import 'package:gallery_app/model/image_dataset/image_dataset.dart';
 
 import 'common/constant.dart';
@@ -22,7 +25,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: Environment.fileName);
-
+  await Firebase.initializeApp();
   await AppTrackingTransparency.requestTrackingAuthorization();
   await StorageController.buildDatabase();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
@@ -91,6 +94,12 @@ class _MyAppState extends State<MyApp> {
           case RouteSetting.imageDetail:
             builder = (BuildContext _) =>
                 ImageDetailView(image: parameters.arguments as ImageDataset);
+            break;
+          case RouteSetting.login:
+            builder = (BuildContext _) => LoginPage();
+            break;
+          case RouteSetting.signUp:
+            builder = (BuildContext _) => SignUpPage();
             break;
           default:
             break;

@@ -21,15 +21,16 @@ class PaddingConstants {
 class RouteSetting {
   static const String main = "/main";
   static const String imageDetail = "/image_detail";
+  static const String login = "/login";
+  static const String signUp = "/sign_up";
 }
 
 class ComponentSize {
   static const double buttonHeight100 = 100;
   static const double bottomBarHeight = 106;
   static const double paddingHorizontal = 27;
-  
+
   static const double appBarSized = 40;
- 
 }
 
 class Language {

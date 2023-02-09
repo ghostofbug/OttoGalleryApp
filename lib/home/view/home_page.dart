@@ -57,7 +57,11 @@ class _HomePageState extends ConsumerState<HomePage>
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           toolbarHeight: 40,
-          leading: Image.asset("assets/app_icon.png"),
+          leading: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed(RouteSetting.login);
+              },
+              child: Image.asset("assets/app_icon.png")),
           title: Text(context.loc.galleryApp),
           backgroundColor: Colors.transparent.withOpacity(0.4),
           shadowColor: null,
