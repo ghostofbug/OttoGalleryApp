@@ -19,30 +19,19 @@ class _HomePageState extends ConsumerState<HomePage>
   late final HomeController homeController =
       HomeController(context: context, ref: ref);
 
-  ScrollController scrollController = ScrollController();
-
   @override
   void initState() {
     if (ref.read(photoListProvider) == null) {
       homeController.requestImage();
     }
-    scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
-        ref.read(isLazyLoadProvider.notifier).state = true;
-        setState(() {
-          
-        });
-        homeController.requestImage();
-      }
-    });
+    homeController.setUpScroll();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     var photoList = ref.watch(photoListProvider);
-    var isLazyLoad = ref.read(isLazyLoadProvider);
+    var isLazyLoad = ref.watch(isLazyLoadProvider);
     if (photoList == null) {
       return Center(
         child: CircularProgressIndicator(),
@@ -66,7 +55,7 @@ class _HomePageState extends ConsumerState<HomePage>
         body: ListView.builder(
             padding: EdgeInsets.zero,
             physics: ClampingScrollPhysics(),
-            controller: scrollController,
+            controller: homeController.photoScrollController,
             key: PageStorageKey(0),
             cacheExtent: MediaQuery.of(context).size.height,
             itemCount: photoList.length + 1,

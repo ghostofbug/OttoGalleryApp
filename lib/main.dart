@@ -31,7 +31,7 @@ Future<void> main() async {
   await StorageController.buildDatabase();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
-    runApp(ProviderScope(child: const MyApp()));
+    runApp(ProviderScope(child: MyApp()));
   });
 }
 

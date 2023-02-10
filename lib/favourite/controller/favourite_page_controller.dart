@@ -12,6 +12,19 @@ class FavouritePageController {
 
   FavouritePageController({required this.context, required this.ref});
 
+  final ScrollController favouriteScrollController = ScrollController();
+
+  void setupScroll() {
+    favouriteScrollController.addListener(() {
+      if (favouriteScrollController.position.atEdge) {
+        if (favouriteScrollController.position.pixels != 0) {
+          ref.read(isLazyLoadProvider.notifier).state = true;
+          getFavouriteImages();
+        }
+      }
+    });
+  }
+
   Future<List<Photo>?> getFavouriteImages() async {
     var page = ref.read(favouritePageListProvider);
     var result =

@@ -1,48 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/colors.dart';
 import 'package:gallery_app/common/component/custom_button.dart';
 import 'package:gallery_app/common/component/custom_textfield.dart';
 import 'package:gallery_app/common/constant.dart';
-import 'package:gallery_app/common/dialog_controller.dart';
 import 'package:gallery_app/common/extension.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:gallery_app/login/controller/login_controller.dart';
+import 'package:gallery_app/provider/provider.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  var isLoginIn = false;
+class _LoginPageState extends ConsumerState<LoginPage> {
+  
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  late LoginController loginController =
+      LoginController(context: context, ref: ref);
+      
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user != null) {
-        setState(() {
-          isLoginIn = true;
-        });
-      } else {
-        emailController = TextEditingController();
-        passwordController = TextEditingController();
-        setState(() {
-          isLoginIn = false;
-        });
-      }
-    });
+    loginController.onAuthStatusChange();
   }
 
   @override
   Widget build(BuildContext context) {
+    var isLoginIn = ref.watch(isLoggedInProvider);
     if (isLoginIn) {
       return Scaffold(
         backgroundColor: CustomAppTheme.colorBlack,
@@ -107,12 +98,13 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               CustomTextField(
-                  controller: emailController, hintText: context.loc.email),
+                  controller: loginController.emailTextController,
+                  hintText: context.loc.email),
               SizedBox(
                 height: PaddingConstants.padding20,
               ),
               CustomTextField(
-                controller: passwordController,
+                controller: loginController.passwordTextController,
                 hintText: context.loc.password,
                 isPassword: true,
               ),
@@ -123,19 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                   customWidth: MediaQuery.of(context).size.width,
                   customHeight: ComponentSize.buttonHeight,
                   backgroundColor: CustomAppTheme.colorWhite,
-                  onPressed: () async {
-                    EasyLoading.show();
-                    try {
-                      await FirebaseAuth.instance.signInWithEmailAndPassword(
-                          email: emailController.text,
-                          password: passwordController.text);
-                      EasyLoading.dismiss();
-                    } on FirebaseAuthException catch (e) {
-                      EasyLoading.dismiss();
-                      DialogController.showFailureDialog(
-                          context: context, title: e.toString());
-                    }
-                  },
+                  onPressed: () async {},
                   textColor: CustomAppTheme.colorBlack,
                   buttonText: context.loc.login),
               SizedBox(
@@ -146,28 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: ComponentSize.buttonHeight,
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    try {
-                      EasyLoading.show();
-                      var result =
-                          await GoogleSignIn(scopes: ['email', 'profile'])
-                              .signIn();
-                      // Obtain the auth details from the request
-                      final GoogleSignInAuthentication? googleAuth =
-                          await result?.authentication;
-                      // Create a new credential
-                      final credential = GoogleAuthProvider.credential(
-                        accessToken: googleAuth?.accessToken,
-                        idToken: googleAuth?.idToken,
-                      );
-                      // Once signed in, return the UserCredential
-                      await FirebaseAuth.instance
-                          .signInWithCredential(credential);
-                      EasyLoading.dismiss();
-                    } catch (error) {
-                      EasyLoading.dismiss();
-                      DialogController.showFailureDialog(
-                          context: context, title: error.toString());
-                    }
+                    await loginController.signInWithGoogle();
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(

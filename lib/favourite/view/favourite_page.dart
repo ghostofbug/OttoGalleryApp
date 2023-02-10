@@ -19,21 +19,10 @@ class _FavouritePageState extends ConsumerState<FavouritePage> {
   late FavouritePageController favouritePageController =
       FavouritePageController(context: context, ref: ref);
 
-  ScrollController scrollController = ScrollController();
-
   @override
   void initState() {
     favouritePageController.getFavouriteImages();
-    scrollController.addListener(() {
-      if (scrollController.position.atEdge) {
-        if (scrollController.position.pixels != 0) {
-          ref.read(isLazyLoadProvider.notifier).state = true;
-          setState(() {});
-          favouritePageController.getFavouriteImages();
-        }
-      }
-    });
-
+    favouritePageController.setupScroll();
     super.initState();
   }
 
@@ -73,7 +62,7 @@ class _FavouritePageState extends ConsumerState<FavouritePage> {
       body: ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: photoList.length + 1,
-          controller: scrollController,
+          controller: favouritePageController.favouriteScrollController,
           key: PageStorageKey("1"),
           itemBuilder: ((context, index) {
             if (index == photoList.length) {

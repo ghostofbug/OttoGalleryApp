@@ -1,24 +1,22 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/colors.dart';
 import 'package:gallery_app/common/component/custom_button.dart';
 import 'package:gallery_app/common/component/custom_textfield.dart';
 import 'package:gallery_app/common/constant.dart';
-import 'package:gallery_app/common/dialog_controller.dart';
 import 'package:gallery_app/common/extension.dart';
+import 'package:gallery_app/login/controller/login_controller.dart';
 
-class SignUpPage extends StatefulWidget {
+class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
-  TextEditingController emailTextController = TextEditingController();
-  TextEditingController passwordTextController = TextEditingController();
-  TextEditingController nameTextController = TextEditingController();
+class _SignUpPageState extends ConsumerState<SignUpPage> {
+  late LoginController loginController =
+      LoginController(context: context, ref: ref);
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +39,13 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Column(
             children: [
               CustomTextField(
-                  controller: emailTextController, hintText: context.loc.email),
+                  controller: loginController.emailTextController,
+                  hintText: context.loc.email),
               SizedBox(
                 height: 20,
               ),
               CustomTextField(
-                controller: passwordTextController,
+                controller: loginController.passwordTextController,
                 hintText: context.loc.password,
                 isPassword: true,
               ),
@@ -54,7 +53,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: 20,
               ),
               CustomTextField(
-                  controller: nameTextController, hintText: context.loc.name),
+                  controller: loginController.nameTextController,
+                  hintText: context.loc.name),
               SizedBox(
                 height: 20,
               ),
@@ -62,35 +62,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   customWidth: MediaQuery.of(context).size.width,
                   customHeight: 50,
                   backgroundColor: CustomAppTheme.colorWhite,
-                  onPressed: () async {
-                    EasyLoading.show();
-                    try {
-                      final credential = await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                        email: emailTextController.text,
-                        password: passwordTextController.text,
-                      );
-                      await FirebaseAuth.instance.currentUser
-                          ?.updateDisplayName(nameTextController.text);
-                      EasyLoading.dismiss();
-                      Navigator.of(context).pop();
-                    } on FirebaseAuthException catch (e) {
-                      EasyLoading.dismiss();
-                      if (e.code == 'weak-password') {
-                        DialogController.showFailureDialog(
-                            context: context,
-                            title: context.loc.passwordIsTooWeak);
-                      } else if (e.code == 'email-already-in-use') {
-                        DialogController.showFailureDialog(
-                            context: context,
-                            title: context.loc.accountAlreadyExistForEmail);
-                      } else if (e.code == "invalid-email") {
-                        DialogController.showFailureDialog(
-                            context: context, title: context.loc.invalidEmail);
-                      }
-                    } catch (e) {
-                      print(e);
-                    }
+                  onPressed: () {
+                    loginController.signUp();
                   },
                   textColor: CustomAppTheme.colorBlack,
                   buttonText: context.loc.signUp),

@@ -46,6 +46,8 @@ final pageListProvider = StateProvider<int>(((ref) {
   return 1;
 }));
 
+final isLoggedInProvider = StateProvider<bool>((ref) => false);
+
 final photoListProvider =
     StateNotifierProvider<PhotoListNotifier, List<Photo>?>((ref) {
   return PhotoListNotifier(null);

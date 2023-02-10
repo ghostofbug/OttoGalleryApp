@@ -11,6 +11,18 @@ class HomeController {
   final BuildContext context;
   final WidgetRef ref;
 
+  ScrollController photoScrollController = ScrollController();
+
+  void setUpScroll() {
+    photoScrollController.addListener(() {
+      if (photoScrollController.position.pixels ==
+        photoScrollController.position.maxScrollExtent) {
+        ref.read(isLazyLoadProvider.notifier).state = true;
+        requestImage();
+      }
+    });
+  }
+
   Future<void> bookmarkPhoto(Photo photo) async {
     photo.favouriteAddDate = DateTime.now().millisecondsSinceEpoch;
     await StorageController.database?.imageDao.insertFavouritePhoto(photo);

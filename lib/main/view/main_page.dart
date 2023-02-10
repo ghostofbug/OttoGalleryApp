@@ -38,6 +38,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: CustomBottomBar(setSelectedIndex: ((value) {
+                      ref.read(isLazyLoadProvider.notifier).state = true;
                       ref.read(selectedTabProvider.notifier).state = value;
                     })),
                   ),
