@@ -25,6 +25,7 @@ Please note: .env file is for demo purpose. In realife, it should be include in 
 ## Feature 
 - Multiple build configuration using Flutter Flavor combine power of Android flavor and iOS Scheme
 - Fully paginate for endless scrolling both Gallery view and Favourite View
+- Cached image dowload from url for optimizint display speed using Cached-network-image package 
 - Store local favourite photo using Sqlite 
 - Sign in with Google, Sign in With Email/Password using Firebase Auth
 - App-ready for supporting multiple language/locale (currently English only, but have room to support other via Flutter Localization)
