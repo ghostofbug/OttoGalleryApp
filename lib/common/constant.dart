@@ -7,15 +7,8 @@ var logicalHeight = logicalScreenSize.height;
 var scaleRatio = logicalHeight * 0.001;
 
 class PaddingConstants {
-  static final double extraSmall = 5 * scaleRatio;
-
-  static final double small = 10 * scaleRatio;
-
-  static final double med = 15 * scaleRatio;
-
-  static final double large = 20 * scaleRatio;
-
-  static final double extraLarge = 25 * scaleRatio;
+  static const double padding20 = 20;
+  static const double padding10 = 10;
 }
 
 class RouteSetting {
@@ -26,11 +19,12 @@ class RouteSetting {
 }
 
 class ComponentSize {
-  static const double buttonHeight100 = 100;
-  static const double bottomBarHeight = 106;
-  static const double paddingHorizontal = 27;
-
+  static const double buttonHeight = 50;
   static const double appBarSized = 40;
+}
+
+class FixedValue {
+  static const kIndexFetchNextPage = 8;
 }
 
 class Language {

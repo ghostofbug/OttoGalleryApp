@@ -61,7 +61,7 @@ class _$AppDatabase extends AppDatabase {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  ImageDao? _imageDaoInstance;
+  PhotoDao? _imageDaoInstance;
 
   ImageUrlDao? _imageUrlDaoInstance;
 
@@ -87,7 +87,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `FAVOURITE_IMAGE` (`id` TEXT, `code` TEXT, `name` TEXT, `width` REAL, `height` REAL, `description` TEXT, `createdAt` TEXT, `updatedAt` TEXT, `blurHash` TEXT, `favouriteAddDate` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `FAVOURITE_PHOTO` (`id` TEXT, `code` TEXT, `name` TEXT, `width` REAL, `height` REAL, `description` TEXT, `createdAt` TEXT, `updatedAt` TEXT, `blurHash` TEXT, `favouriteAddDate` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `FAVOURITE_IMAGE_URLS` (`id` TEXT, `raw` TEXT, `full` TEXT, `regular` TEXT, `small` TEXT, `thumb` TEXT, PRIMARY KEY (`id`))');
 
@@ -98,8 +98,8 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  ImageDao get imageDao {
-    return _imageDaoInstance ??= _$ImageDao(database, changeListener);
+  PhotoDao get imageDao {
+    return _imageDaoInstance ??= _$PhotoDao(database, changeListener);
   }
 
   @override
@@ -108,15 +108,14 @@ class _$AppDatabase extends AppDatabase {
   }
 }
 
-class _$ImageDao extends ImageDao {
-  _$ImageDao(
+class _$PhotoDao extends PhotoDao {
+  _$PhotoDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _imageDatasetInsertionAdapter = InsertionAdapter(
+  )   : _photoInsertionAdapter = InsertionAdapter(
             database,
-            'FAVOURITE_IMAGE',
-            (ImageDataset item) => <String, Object?>{
+            'FAVOURITE_PHOTO',
+            (Photo item) => <String, Object?>{
                   'id': item.id,
                   'code': item.code,
                   'name': item.name,
@@ -128,11 +127,11 @@ class _$ImageDao extends ImageDao {
                   'blurHash': item.blurHash,
                   'favouriteAddDate': item.favouriteAddDate
                 }),
-        _imageDatasetDeletionAdapter = DeletionAdapter(
+        _photoDeletionAdapter = DeletionAdapter(
             database,
-            'FAVOURITE_IMAGE',
+            'FAVOURITE_PHOTO',
             ['id'],
-            (ImageDataset item) => <String, Object?>{
+            (Photo item) => <String, Object?>{
                   'id': item.id,
                   'code': item.code,
                   'name': item.name,
@@ -149,37 +148,18 @@ class _$ImageDao extends ImageDao {
 
   final StreamController<String> changeListener;
 
-  final QueryAdapter _queryAdapter;
+  final InsertionAdapter<Photo> _photoInsertionAdapter;
 
-  final InsertionAdapter<ImageDataset> _imageDatasetInsertionAdapter;
-
-  final DeletionAdapter<ImageDataset> _imageDatasetDeletionAdapter;
+  final DeletionAdapter<Photo> _photoDeletionAdapter;
 
   @override
-  Future<List<ImageDataset>> getAllFavouriteImage() async {
-    return _queryAdapter.queryList('SELECT * FROM FAVOURITE_IMAGE',
-        mapper: (Map<String, Object?> row) => ImageDataset(
-            code: row['code'] as String?,
-            id: row['id'] as String?,
-            createdAt: row['createdAt'] as String?,
-            description: row['description'] as String?,
-            favouriteAddDate: row['favouriteAddDate'] as int?,
-            height: row['height'] as double?,
-            name: row['name'] as String?,
-            updatedAt: row['updatedAt'] as String?,
-            blurHash: row['blurHash'] as String?,
-            width: row['width'] as double?));
+  Future<void> insertFavouritePhoto(Photo photo) async {
+    await _photoInsertionAdapter.insert(photo, OnConflictStrategy.replace);
   }
 
   @override
-  Future<void> insertFavouriteImage(ImageDataset imageDataset) async {
-    await _imageDatasetInsertionAdapter.insert(
-        imageDataset, OnConflictStrategy.replace);
-  }
-
-  @override
-  Future<void> deleteFavouriteImage(ImageDataset image) async {
-    await _imageDatasetDeletionAdapter.delete(image);
+  Future<void> deleteFavouritePhoto(Photo photo) async {
+    await _photoDeletionAdapter.delete(photo);
   }
 }
 

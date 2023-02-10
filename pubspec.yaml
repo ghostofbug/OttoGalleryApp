@@ -53,7 +53,6 @@ dependencies:
   floor: ^1.4.1
   firebase_core: ^2.5.0
   firebase_auth: ^4.2.6
-  firebase_database: ^10.0.10
   google_sign_in: ^5.0.0
   
 

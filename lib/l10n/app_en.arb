@@ -10,6 +10,16 @@
    "noConnectionPleaseTryAgain": "No internet connection\nPlease try again",
    "ok": "OK",
    "somethingErrorHappenPleaseTryAgainLater":"Something error happen\nPlease try again later",
-   "connectionTimeOutPleaseTryAgainLater": "Connection time out\nPlease try again later"
+   "connectionTimeOutPleaseTryAgainLater": "Connection time out\nPlease try again later",
+   "email": "Email",
+   "password": "Password",
+   "login": "Login",
+   "signUp": "Sign Up",
+   "loginWithGoogle":"Login with Google",
+   "name": "Name",
+   "dontHaveAccountSignUp": "Dont have account? Sign up",
+   "passwordIsTooWeak":"Password is too weak",
+   "accountAlreadyExistForEmail":"The account already exists for that email",
+   "invalidEmail": "Invalid email"
   
 }

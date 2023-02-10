@@ -1,11 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/extension.dart';
 import 'package:gallery_app/favourite/controller/favourite_page_controller.dart';
 import 'package:gallery_app/provider/provider.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
 import '../../common/colors.dart';
 import '../../common/constant.dart';
 
@@ -20,42 +19,29 @@ class _FavouritePageState extends ConsumerState<FavouritePage> {
   late FavouritePageController favouritePageController =
       FavouritePageController(context: context, ref: ref);
 
+  ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     favouritePageController.getFavouriteImages();
-    itemPositionsListener.itemPositions.addListener(() async {
-      var max = itemPositionsListener.itemPositions.value
-          .where((ItemPosition position) => position.itemLeadingEdge < 1)
-          .reduce((ItemPosition max, ItemPosition position) =>
-              position.itemLeadingEdge > max.itemLeadingEdge ? position : max)
-          .index;
-      var favoriteListLength = ref.read(favouriteImageListProvider).length;
-      if (max == favoriteListLength - 2) {
-        await favouritePageController.getFavouriteImages();
+    scrollController.addListener(() {
+      if (scrollController.position.atEdge) {
+        if (scrollController.position.pixels != 0) {
+          ref.read(isLazyLoadProvider.notifier).state = true;
+          setState(() {});
+          favouritePageController.getFavouriteImages();
+        }
       }
     });
-  }
 
-  ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
-
-  Widget renderBlur(String? blurHash) {
-    if (blurHash == null) {
-      return SizedBox.shrink();
-    } else {
-      if (blurHash.length < 6) {
-        return SizedBox.shrink();
-      } else {
-        return BlurHash(hash: blurHash);
-      }
-    }
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var imageList = ref.watch(favouriteImageListProvider);
-    if (imageList.isEmpty) {
+    var photoList = ref.watch(favouritePhotoListProvider);
+    var isLazyLoad = ref.watch(isLazyLoadProvider);
+    if (photoList.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -75,23 +61,38 @@ class _FavouritePageState extends ConsumerState<FavouritePage> {
 
     return Scaffold(
       appBar: AppBar(
-          toolbarHeight: 40,
+          centerTitle: true,
+          toolbarHeight: ComponentSize.appBarSized,
           leading: SizedBox.shrink(),
           backgroundColor: CustomAppTheme.colorBlack,
+          actions: [],
           title: Text(
             context.loc.favourite,
             style: TextStyle(color: CustomAppTheme.colorWhite),
           )),
-      body: ScrollablePositionedList.builder(
-          itemPositionsListener: itemPositionsListener,
-          itemCount: imageList.length,
+      body: ListView.builder(
+          padding: EdgeInsets.zero,
+          itemCount: photoList.length + 1,
+          controller: scrollController,
           key: PageStorageKey("1"),
           itemBuilder: ((context, index) {
-            var image = imageList[index];
+            if (index == photoList.length) {
+              if (isLazyLoad) {
+                return Container(
+                    color: CustomAppTheme.colorBlack.withOpacity(0.3),
+                    height: 500,
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: CustomAppTheme.colorWhite,
+                    )));
+              }
+              return SizedBox.shrink();
+            }
+            var photo = photoList[index];
             return GestureDetector(
               onTap: () {
                 Navigator.of(context)
-                    .pushNamed(RouteSetting.imageDetail, arguments: image);
+                    .pushNamed(RouteSetting.imageDetail, arguments: photo);
               },
               child: Stack(
                 children: [
@@ -101,13 +102,13 @@ class _FavouritePageState extends ConsumerState<FavouritePage> {
                           child: Center(
                               child: AspectRatio(
                                   aspectRatio:
-                                      (image.width ?? 1) / (image.height ?? 1),
-                                  child: renderBlur(image.blurHash))),
+                                      (photo.width ?? 1) / (photo.height ?? 1),
+                                  child: BlurWidget(photo.blurHash))),
                         );
                       }),
                       imageBuilder: ((context, imageProvider) {
                         return AspectRatio(
-                          aspectRatio: (image.width ?? 1) / (image.height ?? 1),
+                          aspectRatio: (photo.width ?? 1) / (photo.height ?? 1),
                           child: Stack(
                             children: [
                               Image(
@@ -118,13 +119,15 @@ class _FavouritePageState extends ConsumerState<FavouritePage> {
                           ),
                         );
                       }),
-                      imageUrl: image.imageUrls?.regular ?? ""),
+                      imageUrl: photo.imageUrls?.regular ?? ""),
                   Positioned(
                     bottom: 5,
                     child: Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
+                      padding: EdgeInsets.only(
+                          left: PaddingConstants.padding10,
+                          right: PaddingConstants.padding10),
                       child: Text(
-                        image.description ?? "",
+                        photo.description ?? "",
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: TextStyle(

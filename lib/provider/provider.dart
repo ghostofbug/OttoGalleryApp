@@ -1,36 +1,39 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gallery_app/model/image_dataset/image_dataset.dart';
+import 'package:gallery_app/common/constant.dart';
 
-import '../common/constant.dart';
-import '../common/storage_controller.dart';
+import '../model/photo_model/photo_model.dart';
 
-
-
-final favouriteImageListProvider =
-    StateNotifierProvider<FavouriteImageListNotifier, List<ImageDataset>>(
-        (ref) {
-  return FavouriteImageListNotifier([]);
+final favouritePhotoListProvider =
+    StateNotifierProvider<FavouritePhotoListNotifier, List<Photo>>((ref) {
+  return FavouritePhotoListNotifier([]);
 });
 
-class FavouriteImageListNotifier extends StateNotifier<List<ImageDataset>> {
-  FavouriteImageListNotifier(List<ImageDataset> state) : super([]);
+final isLazyLoadProvider = StateProvider<bool>((ref) => true);
 
-  void setList(List<ImageDataset> list) {
+class FavouritePhotoListNotifier extends StateNotifier<List<Photo>> {
+  FavouritePhotoListNotifier(List<Photo> state) : super([]);
+  void setList(List<Photo> list) {
     state = list;
   }
 
-  void addItem(ImageDataset imageDataset) {
-    if (state.indexWhere((element) => element.id == imageDataset.id) == -1) {
-      state = [...state, imageDataset];
+  void addItem(Photo photo) {
+    if (state.indexWhere((element) => element.id == photo.id) == -1) {
+      state = [...state, photo];
     }
   }
 
-  void removeItem(ImageDataset imageDataset) {
-    List<ImageDataset> copyList = [];
+  void insertAtHead(Photo photo) {
+    if (state.indexWhere((element) => element.id == photo.id) == -1) {
+      state = [photo, ...state];
+    }
+  }
+
+  void removeItem(Photo photo) {
+    List<Photo> copyList = [];
     for (var item in state) {
       copyList.add(item);
     }
-    copyList.removeWhere((element) => element.id == imageDataset.id);
+    copyList.removeWhere((element) => element.id == photo.id);
     state = copyList;
   }
 }
@@ -43,20 +46,24 @@ final pageListProvider = StateProvider<int>(((ref) {
   return 1;
 }));
 
-final imageListProvider =
-    StateNotifierProvider<ImageListNotifier, List<ImageDataset>>((ref) {
-  return ImageListNotifier([]);
+final photoListProvider =
+    StateNotifierProvider<PhotoListNotifier, List<Photo>?>((ref) {
+  return PhotoListNotifier(null);
 });
 
-class ImageListNotifier extends StateNotifier<List<ImageDataset>> {
-  ImageListNotifier(List<ImageDataset> state) : super([]);
+class PhotoListNotifier extends StateNotifier<List<Photo>?> {
+  PhotoListNotifier(List<Photo>? state) : super(null);
 
-  void setList(List<ImageDataset> list) {
+  void setList(List<Photo> list) {
     state = list;
   }
 
-  void addItem(ImageDataset categoryDataset) {
-    state = [...state, categoryDataset];
+  void addItem(Photo photoDataset) {
+    if (state != null) {
+      if (state?.indexWhere((element) => element.id == photoDataset.id) == -1) {
+        state = [...state!, photoDataset];
+      }
+    }
   }
 }
 

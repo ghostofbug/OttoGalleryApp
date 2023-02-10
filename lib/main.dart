@@ -11,10 +11,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/colors.dart';
-import 'package:gallery_app/image_detail/view/image_detail_view.dart';
+import 'package:gallery_app/image_detail/view/photo_detail_view.dart';
 import 'package:gallery_app/login/view/login_page.dart';
 import 'package:gallery_app/login/view/sign_up_page.dart';
-import 'package:gallery_app/model/image_dataset/image_dataset.dart';
+
+import 'package:gallery_app/model/photo_model/photo_model.dart';
 
 import 'common/constant.dart';
 import 'common/environment.dart';
@@ -93,7 +94,7 @@ class _MyAppState extends State<MyApp> {
             break;
           case RouteSetting.imageDetail:
             builder = (BuildContext _) =>
-                ImageDetailView(image: parameters.arguments as ImageDataset);
+                PhotoDetailPage(photo: parameters.arguments as Photo);
             break;
           case RouteSetting.login:
             builder = (BuildContext _) => LoginPage();

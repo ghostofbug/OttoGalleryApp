@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'image_dataset.dart';
+part of 'photo_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ImageDataset _$ImageDatasetFromJson(Map<String, dynamic> json) => ImageDataset(
+Photo _$PhotoFromJson(Map<String, dynamic> json) => Photo(
       code: json['code'] as String?,
       id: json['id'] as String?,
       createdAt: json['created_at'] as String?,
@@ -19,8 +19,7 @@ ImageDataset _$ImageDatasetFromJson(Map<String, dynamic> json) => ImageDataset(
       width: (json['width'] as num?)?.toDouble(),
     );
 
-Map<String, dynamic> _$ImageDatasetToJson(ImageDataset instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$PhotoToJson(Photo instance) => <String, dynamic>{
       'id': instance.id,
       'code': instance.code,
       'name': instance.name,

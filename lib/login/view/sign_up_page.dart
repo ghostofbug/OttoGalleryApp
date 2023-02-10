@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gallery_app/common/colors.dart';
 import 'package:gallery_app/common/component/custom_button.dart';
+import 'package:gallery_app/common/component/custom_textfield.dart';
 import 'package:gallery_app/common/constant.dart';
 import 'package:gallery_app/common/dialog_controller.dart';
+import 'package:gallery_app/common/extension.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -26,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
         centerTitle: true,
         backgroundColor: CustomAppTheme.colorBlack,
         title: Text(
-          "Sign Up",
+          context.loc.signUp,
           style: TextStyle(
               fontSize: FontSize.fontSize22,
               color: CustomAppTheme.colorWhite,
@@ -38,66 +40,23 @@ class _SignUpPageState extends State<SignUpPage> {
           padding: EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              TextFormField(
-                style: TextStyle(color: CustomAppTheme.colorWhite),
-                controller: emailTextController,
-                decoration: InputDecoration(
-                    hintText: "Email",
-                    hintStyle: TextStyle(
-                        color: CustomAppTheme.colorWhite.withOpacity(0.6)),
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(1.0))),
-                    enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(0.5))),
-                    border: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: CustomAppTheme.colorWhite))),
-              ),
+              CustomTextField(
+                  controller: emailTextController, hintText: context.loc.email),
               SizedBox(
-                height: 10,
+                height: 20,
               ),
-              TextFormField(
-                style: TextStyle(color: CustomAppTheme.colorWhite),
+              CustomTextField(
                 controller: passwordTextController,
-                decoration: InputDecoration(
-                    hintText: "Password",
-                    hintStyle: TextStyle(
-                        color: CustomAppTheme.colorWhite.withOpacity(0.6)),
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(1.0))),
-                    enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(0.5))),
-                    border: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: CustomAppTheme.colorWhite))),
+                hintText: context.loc.password,
+                isPassword: true,
               ),
               SizedBox(
                 height: 20,
               ),
-              TextFormField(
-                style: TextStyle(color: CustomAppTheme.colorWhite),
-                controller: nameTextController,
-                obscureText: true,
-                decoration: InputDecoration(
-                    hintText: "Name",
-                    hintStyle: TextStyle(
-                        color: CustomAppTheme.colorWhite.withOpacity(0.6)),
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(1.0))),
-                    enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(0.5))),
-                    border: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: CustomAppTheme.colorWhite))),
-              ),
+              CustomTextField(
+                  controller: nameTextController, hintText: context.loc.name),
               SizedBox(
-                height: 30,
+                height: 20,
               ),
               CustomButton(
                   customWidth: MediaQuery.of(context).size.width,
@@ -119,24 +78,24 @@ class _SignUpPageState extends State<SignUpPage> {
                       EasyLoading.dismiss();
                       if (e.code == 'weak-password') {
                         DialogController.showFailureDialog(
-                            context: context, title: "Password is too weak");
+                            context: context,
+                            title: context.loc.passwordIsTooWeak);
                       } else if (e.code == 'email-already-in-use') {
                         DialogController.showFailureDialog(
                             context: context,
-                            title:
-                                "The account already exists for that email.");
+                            title: context.loc.accountAlreadyExistForEmail);
                       } else if (e.code == "invalid-email") {
                         DialogController.showFailureDialog(
-                            context: context, title: "Invalid email");
+                            context: context, title: context.loc.invalidEmail);
                       }
                     } catch (e) {
                       print(e);
                     }
                   },
                   textColor: CustomAppTheme.colorBlack,
-                  buttonText: "Sign Up"),
+                  buttonText: context.loc.signUp),
               SizedBox(
-                height: 20,
+                height: PaddingConstants.padding20,
               ),
             ],
           ),

@@ -1,14 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/colors.dart';
 import 'package:gallery_app/common/constant.dart';
 import 'package:gallery_app/common/extension.dart';
-import 'package:gallery_app/common/storage_controller.dart';
 import 'package:gallery_app/home/controller/home_controller.dart';
 import 'package:gallery_app/provider/provider.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,41 +19,40 @@ class _HomePageState extends ConsumerState<HomePage>
   late final HomeController homeController =
       HomeController(context: context, ref: ref);
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
-    homeController.endListLength =
-        homeController.endListLength * (ref.read(pageListProvider) - 1);
-    itemPositionsListener.itemPositions.addListener(() async {
-      //finding current index is scrolling to
-      var max = itemPositionsListener.itemPositions.value
-          .where((ItemPosition position) => position.itemLeadingEdge < 1)
-          .reduce((ItemPosition max, ItemPosition position) =>
-              position.itemLeadingEdge > max.itemLeadingEdge ? position : max)
-          .index;
-      if (max == homeController.endListLength) {
-        homeController.endListLength = homeController.endListLength + 8;
-        await homeController.requestImage();
+    if (ref.read(photoListProvider) == null) {
+      homeController.requestImage();
+    }
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        ref.read(isLazyLoadProvider.notifier).state = true;
+        setState(() {
+          
+        });
+        homeController.requestImage();
       }
     });
     super.initState();
   }
 
-  ScrollController scrollController = ScrollController();
-  ItemScrollController itemScrollController = ItemScrollController();
-  ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
-
   @override
   Widget build(BuildContext context) {
-    var imageList = ref.watch(imageListProvider);
+    var photoList = ref.watch(photoListProvider);
+    var isLazyLoad = ref.read(isLazyLoadProvider);
+    if (photoList == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          toolbarHeight: 40,
+          centerTitle: true,
+          toolbarHeight: ComponentSize.appBarSized,
           leading: GestureDetector(
               onTap: () {
                 Navigator.of(context).pushNamed(RouteSetting.login);
@@ -67,51 +63,54 @@ class _HomePageState extends ConsumerState<HomePage>
           shadowColor: null,
           elevation: 0,
         ),
-        body: ScrollablePositionedList.builder(
-            itemScrollController: itemScrollController,
-            itemPositionsListener: itemPositionsListener,
+        body: ListView.builder(
+            padding: EdgeInsets.zero,
+            physics: ClampingScrollPhysics(),
+            controller: scrollController,
             key: PageStorageKey(0),
-            itemCount: imageList.length + 1,
+            cacheExtent: MediaQuery.of(context).size.height,
+            itemCount: photoList.length + 1,
             itemBuilder: ((context, index) {
-              late AnimationController _scale;
-              late Animation<double> _scaleAnimation;
-              _scale = AnimationController(
-                  vsync: this, duration: Duration(milliseconds: 1000));
-              _scaleAnimation = TweenSequence(
+              if (index == photoList.length) {
+                if (isLazyLoad) {
+                  return Container(
+                      color: CustomAppTheme.colorBlack.withOpacity(0.3),
+                      height: 500,
+                      child: Center(
+                          child: CircularProgressIndicator(
+                        color: CustomAppTheme.colorWhite,
+                      )));
+                }
+                return SizedBox.shrink();
+              }
+              AnimationController _scale = AnimationController(
+                  vsync: this, duration: Duration(milliseconds: 700));
+              Animation<double> _scaleAnimation = TweenSequence(
                 <TweenSequenceItem<double>>[
                   TweenSequenceItem<double>(
                     tween: Tween(begin: 0.0, end: 1.0)
-                        .chain(CurveTween(curve: Curves.ease)),
+                        .chain(CurveTween(curve: Curves.linear)),
                     weight: 50.0,
                   ),
                   TweenSequenceItem<double>(
                     tween: Tween(begin: 1.0, end: 0.0)
-                        .chain(CurveTween(curve: Curves.ease)),
+                        .chain(CurveTween(curve: Curves.linear)),
                     weight: 50.0,
                   ),
                 ],
               ).animate(_scale);
-              if (index == imageList.length) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              var image = imageList[index];
+
+              var photo = photoList[index];
               return GestureDetector(
                 onDoubleTap: () async {
                   _scale.reset();
                   _scale.forward();
-                  image.favouriteAddDate =
-                      DateTime.now().millisecondsSinceEpoch;
-                  await StorageController.database?.imageDao
-                      .insertFavouriteImage(image);
-                  await StorageController.database?.imageUrlDao
-                      .insertFavouriteImageUrl(image.imageUrls!);
-                  ref.read(favouriteImageListProvider.notifier).addItem(image);
+
+                  homeController.bookmarkPhoto(photo);
                 },
                 onTap: () {
                   Navigator.of(context)
-                      .pushNamed(RouteSetting.imageDetail, arguments: image);
+                      .pushNamed(RouteSetting.imageDetail, arguments: photo);
                 },
                 child: Stack(
                   children: [
@@ -120,16 +119,15 @@ class _HomePageState extends ConsumerState<HomePage>
                           return SizedBox(
                             child: Center(
                                 child: AspectRatio(
-                                    aspectRatio: (image.width ?? 1) /
-                                        (image.height ?? 1),
-                                    child:
-                                        BlurHash(hash: image.blurHash ?? ""))),
+                                    aspectRatio: (photo.width ?? 1) /
+                                        (photo.height ?? 1),
+                                    child: BlurWidget(photo.blurHash ?? ""))),
                           );
                         }),
                         imageBuilder: ((context, imageProvider) {
                           return AspectRatio(
                             aspectRatio:
-                                (image.width ?? 1) / (image.height ?? 1),
+                                (photo.width ?? 1) / (photo.height ?? 1),
                             child: Stack(
                               children: [
                                 Image(
@@ -142,8 +140,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                     scale: _scaleAnimation,
                                     child: Icon(
                                       Icons.favorite,
-                                      size: ((image.width ?? 1) /
-                                              (image.height ?? 1)) *
+                                      size: ((photo.width ?? 1) /
+                                              (photo.height ?? 1)) *
                                           128,
                                       color: CustomAppTheme.colorWhite,
                                     ),
@@ -153,13 +151,13 @@ class _HomePageState extends ConsumerState<HomePage>
                             ),
                           );
                         }),
-                        imageUrl: image.imageUrls?.regular ?? ""),
+                        imageUrl: photo.imageUrls?.regular ?? ""),
                     Positioned(
                       bottom: 5,
                       child: Container(
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: Text(
-                          image.description ?? "",
+                          photo.description ?? "",
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: TextStyle(

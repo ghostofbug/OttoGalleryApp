@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/storage_controller.dart';
-import 'package:gallery_app/model/image_dataset/image_dataset.dart';
+
 import 'package:gallery_app/provider/provider.dart';
+
+import '../../model/photo_model/photo_model.dart';
 
 class FavouritePageController {
   final WidgetRef ref;
@@ -10,20 +12,21 @@ class FavouritePageController {
 
   FavouritePageController({required this.context, required this.ref});
 
-  Future<List<ImageDataset>?> getFavouriteImages() async {
-    var currentList = ref.read(favouriteImageListProvider);
+  Future<List<Photo>?> getFavouriteImages() async {
     var page = ref.read(favouritePageListProvider);
-    if (currentList.isNotEmpty && currentList.length % 5 == 0) {
-      ref.read(favouritePageListProvider.notifier).state =
-          currentList.length ~/ 5 + 1;
-    }
     var result =
-        await StorageController.database?.imageDao.getFavouriteImages(page);
+        await StorageController.database?.imageDao.getFavouritePhotos(page);
     if (result != null && result.isNotEmpty) {
       for (var item in result) {
-        ref.read(favouriteImageListProvider.notifier).addItem(item);
+        ref.read(favouritePhotoListProvider.notifier).addItem(item);
+      }
+      var currentList = ref.read(favouritePhotoListProvider);
+      if (currentList.isNotEmpty && currentList.length % 5 == 0) {
+        ref.read(favouritePageListProvider.notifier).state =
+            currentList.length ~/ 5 + 1;
       }
     }
+    ref.read(isLazyLoadProvider.notifier).state = false;
     return result;
   }
 }

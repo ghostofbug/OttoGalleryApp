@@ -1,36 +1,36 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/colors.dart';
+import 'package:gallery_app/common/extension.dart';
 import 'package:gallery_app/common/storage_controller.dart';
-import 'package:gallery_app/image_detail/controller/image_detail_controller.dart';
-import 'package:gallery_app/model/image_dataset/image_dataset.dart';
+import 'package:gallery_app/image_detail/controller/photo_detail_controller.dart';
+import 'package:gallery_app/model/photo_model/photo_model.dart';
 import 'package:photo_view/photo_view.dart';
 
-class ImageDetailView extends ConsumerStatefulWidget {
-  ImageDetailView({Key? key, required this.image}) : super(key: key);
+class PhotoDetailPage extends ConsumerStatefulWidget {
+  PhotoDetailPage({Key? key, required this.photo}) : super(key: key);
 
-  ImageDataset image;
+  Photo photo;
 
   @override
   _ImageDetailViewState createState() => _ImageDetailViewState();
 }
 
-class _ImageDetailViewState extends ConsumerState<ImageDetailView> {
+class _ImageDetailViewState extends ConsumerState<PhotoDetailPage> {
   var isFavourite = false;
 
   bool hideUIElement = false;
 
-  late ImageDetailController imageDetailController =
-      ImageDetailController(context: context, ref: ref, image: widget.image);
+  late PhotoDetailController imageDetailController =
+      PhotoDetailController(context: context, ref: ref, photo: widget.photo);
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     StorageController.database?.imageDao
-        .checkExistFavoriteImage(widget.image.id ?? "")
+        .checkExistFavoritePhoto(widget.photo.id ?? "")
         .then((value) {
       setState(() {
         isFavourite = value;
@@ -40,20 +40,20 @@ class _ImageDetailViewState extends ConsumerState<ImageDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    var image = imageDetailController.image;
+    var photo = imageDetailController.photo;
     return Scaffold(
       backgroundColor: CustomAppTheme.colorBlack.withOpacity(0.6),
       body: Stack(children: [
         Align(
           alignment: Alignment.center,
           child: CachedNetworkImage(
-            imageUrl: image.imageUrls?.regular ?? "",
+            imageUrl: photo.imageUrls?.regular ?? "",
             placeholder: ((context, url) {
               return SizedBox(
                 child: Center(
                     child: AspectRatio(
-                        aspectRatio: (image.width ?? 1) / (image.height ?? 1),
-                        child: BlurHash(hash: image.blurHash ?? ""))),
+                        aspectRatio: (photo.width ?? 1) / (photo.height ?? 1),
+                        child: BlurWidget(photo.blurHash ?? ""))),
               );
             }),
             imageBuilder: ((context, imageProvider) {
@@ -93,7 +93,7 @@ class _ImageDetailViewState extends ConsumerState<ImageDetailView> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Text(
-                    image.description ?? "",
+                    photo.description ?? "",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: CustomAppTheme.colorWhite,
@@ -134,8 +134,7 @@ class _ImageDetailViewState extends ConsumerState<ImageDetailView> {
               style: ElevatedButton.styleFrom(
                   shape: CircleBorder(),
                   padding: EdgeInsets.all(20),
-                  backgroundColor: CustomAppTheme.colorWhite
-                  ),
+                  backgroundColor: CustomAppTheme.colorWhite),
             ),
           ),
         )

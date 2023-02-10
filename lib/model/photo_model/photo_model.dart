@@ -1,10 +1,10 @@
 import 'package:floor/floor.dart';
 import 'package:json_annotation/json_annotation.dart';
-part 'image_dataset.g.dart';
+part 'photo_model.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-@Entity(tableName: 'FAVOURITE_IMAGE')
-class ImageDataset {
+@Entity(tableName: 'FAVOURITE_PHOTO')
+class Photo {
   @primaryKey
   String? id;
   String? code;
@@ -12,7 +12,7 @@ class ImageDataset {
   double? width;
   double? height;
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false,includeToJson: false)
   @ignore
   ImageUrl? imageUrls;
 
@@ -22,7 +22,7 @@ class ImageDataset {
   String? blurHash;
   int? favouriteAddDate;
 
-  ImageDataset(
+  Photo(
       {this.code,
       this.id,
       this.createdAt,
@@ -35,16 +35,16 @@ class ImageDataset {
       this.imageUrls,
       this.width});
 
-  factory ImageDataset.fromJson(Map<String, dynamic> json) {
-    var image = _$ImageDatasetFromJson(json);
+  factory Photo.fromJson(Map<String, dynamic> json) {
+    var photo = _$PhotoFromJson(json);
     if (json["urls"] is Map<String, dynamic>) {
-      image.imageUrls = ImageUrl.ImageUrlFromJson(json["urls"]);
-      image.imageUrls?.id = image.id;
+      photo.imageUrls = ImageUrl.ImageUrlFromJson(json["urls"]);
+      photo.imageUrls?.id = photo.id;
     }
-    return image;
+    return photo;
   }
 
-  Map<String, dynamic> toJson() => _$ImageDatasetToJson(this);
+  Map<String, dynamic> toJson() => _$PhotoToJson(this);
 }
 
 @Entity(tableName: 'FAVOURITE_IMAGE_URLS')

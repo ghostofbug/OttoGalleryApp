@@ -39,7 +39,7 @@ class DialogController {
                     ),
                   ),
                   SizedBox(
-                    height: PaddingConstants.med,
+                    height: PaddingConstants.padding10,
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
@@ -54,7 +54,7 @@ class DialogController {
                     ),
                   ),
                   SizedBox(
-                    height: PaddingConstants.med,
+                    height: PaddingConstants.padding10,
                   ),
                   CustomButton(
                       customHeight: 42,
@@ -66,7 +66,7 @@ class DialogController {
                       textColor: CustomAppTheme.colorWhite,
                       buttonText: context.loc.ok),
                   SizedBox(
-                    height: PaddingConstants.large,
+                    height: PaddingConstants.padding20,
                   )
                 ],
               ),
@@ -92,7 +92,7 @@ class DialogController {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   SizedBox(
-                    height: PaddingConstants.large,
+                    height: PaddingConstants.padding20,
                   ),
                   ClipOval(
                     child: Material(
@@ -110,7 +110,7 @@ class DialogController {
                     ),
                   ),
                   SizedBox(
-                    height: PaddingConstants.med,
+                    height: PaddingConstants.padding10,
                   ),
                   Text(
                     title,
@@ -130,11 +130,11 @@ class DialogController {
                         )
                       : SizedBox.shrink(),
                   SizedBox(
-                    height: PaddingConstants.med,
+                    height: PaddingConstants.padding10,
                   ),
                   CustomButton(
                       customWidth: MediaQuery.of(context).size.width * 0.6,
-                      customHeight: 50,
+                      customHeight: ComponentSize.buttonHeight,
                       backgroundColor: CustomAppTheme.colorBlack,
                       onPressed: (() {
                         Navigator.of(context).pop();
@@ -142,7 +142,7 @@ class DialogController {
                       textColor: CustomAppTheme.colorWhite,
                       buttonText: context.loc.ok),
                   SizedBox(
-                    height: PaddingConstants.large,
+                    height: PaddingConstants.padding20,
                   )
                 ],
               ),

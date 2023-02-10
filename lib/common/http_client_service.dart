@@ -69,8 +69,7 @@ class HttpClientService {
               failure(ex.response?.data);
               DialogController.showFailureDialog(
                   context: navigatorKey.currentContext!,
-                  title: navigatorKey.currentContext!.loc
-                      .somethingErrorHappenPleaseTryAgainLater);
+                  title: ex.response!.data.toString());
             } else {
               AppLogger.failureApiLog(
                   "Failure", "", url, method.name, parameters.toString());
@@ -121,8 +120,7 @@ class HttpClientService {
             failure(ex.response?.data);
             DialogController.showFailureDialog(
                 context: navigatorKey.currentContext!,
-                title: navigatorKey.currentContext!.loc
-                    .somethingErrorHappenPleaseTryAgainLater);
+                title: ex.response!.data.toString());
           } else {
             AppLogger.failureApiLog(
                 "Failure", "", url, method.name, parameters.toString());

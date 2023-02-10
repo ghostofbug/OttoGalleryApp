@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gallery_app/common/colors.dart';
 import 'package:gallery_app/common/component/custom_button.dart';
+import 'package:gallery_app/common/component/custom_textfield.dart';
 import 'package:gallery_app/common/constant.dart';
 import 'package:gallery_app/common/dialog_controller.dart';
+import 'package:gallery_app/common/extension.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
@@ -70,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Email",
+                context.loc.email,
                 style: TextStyle(color: CustomAppTheme.colorWhite),
               ),
               Text(
@@ -92,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
         centerTitle: true,
         backgroundColor: CustomAppTheme.colorBlack,
         title: Text(
-          "Login",
+          context.loc.login,
           style: TextStyle(
               fontSize: FontSize.fontSize22,
               color: CustomAppTheme.colorWhite,
@@ -104,50 +106,22 @@ class _LoginPageState extends State<LoginPage> {
           padding: EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              TextFormField(
-                style: TextStyle(color: CustomAppTheme.colorWhite),
-                controller: emailController,
-                decoration: InputDecoration(
-                    hintText: "Email",
-                    hintStyle: TextStyle(
-                        color: CustomAppTheme.colorWhite.withOpacity(0.6)),
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(1.0))),
-                    enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(0.5))),
-                    border: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: CustomAppTheme.colorWhite))),
-              ),
+              CustomTextField(
+                  controller: emailController, hintText: context.loc.email),
               SizedBox(
-                height: 10,
+                height: PaddingConstants.padding20,
               ),
-              TextFormField(
-                style: TextStyle(color: CustomAppTheme.colorWhite),
+              CustomTextField(
                 controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                    hintText: "Password",
-                    hintStyle: TextStyle(
-                        color: CustomAppTheme.colorWhite.withOpacity(0.6)),
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(1.0))),
-                    enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: CustomAppTheme.colorWhite.withOpacity(0.5))),
-                    border: UnderlineInputBorder(
-                        borderSide:
-                            BorderSide(color: CustomAppTheme.colorWhite))),
+                hintText: context.loc.password,
+                isPassword: true,
               ),
               SizedBox(
-                height: 20,
+                height: PaddingConstants.padding20,
               ),
               CustomButton(
                   customWidth: MediaQuery.of(context).size.width,
-                  customHeight: 50,
+                  customHeight: ComponentSize.buttonHeight,
                   backgroundColor: CustomAppTheme.colorWhite,
                   onPressed: () async {
                     EasyLoading.show();
@@ -163,18 +137,34 @@ class _LoginPageState extends State<LoginPage> {
                     }
                   },
                   textColor: CustomAppTheme.colorBlack,
-                  buttonText: "Login"),
+                  buttonText: context.loc.login),
               SizedBox(
-                height: 10,
+                height: PaddingConstants.padding20,
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: 50,
+                height: ComponentSize.buttonHeight,
                 child: ElevatedButton.icon(
                   onPressed: () async {
                     try {
-                      await GoogleSignIn().signIn();
+                      EasyLoading.show();
+                      var result =
+                          await GoogleSignIn(scopes: ['email', 'profile'])
+                              .signIn();
+                      // Obtain the auth details from the request
+                      final GoogleSignInAuthentication? googleAuth =
+                          await result?.authentication;
+                      // Create a new credential
+                      final credential = GoogleAuthProvider.credential(
+                        accessToken: googleAuth?.accessToken,
+                        idToken: googleAuth?.idToken,
+                      );
+                      // Once signed in, return the UserCredential
+                      await FirebaseAuth.instance
+                          .signInWithCredential(credential);
+                      EasyLoading.dismiss();
                     } catch (error) {
+                      EasyLoading.dismiss();
                       DialogController.showFailureDialog(
                           context: context, title: error.toString());
                     }
@@ -183,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    primary: Colors.white,
+                    backgroundColor: CustomAppTheme.colorWhite,
                     elevation: 2,
                     padding: const EdgeInsets.all(10),
                   ),
@@ -193,20 +183,23 @@ class _LoginPageState extends State<LoginPage> {
                     height: 24,
                   ),
                   label: Text(
-                    "Login with Google",
-                    style: TextStyle(color: CustomAppTheme.colorBlack),
+                    context.loc.loginWithGoogle,
+                    style: TextStyle(
+                        color: CustomAppTheme.colorBlack,
+                        fontSize: FontSize.fontSize16,
+                        fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
               SizedBox(
-                height: 20,
+                height: PaddingConstants.padding20,
               ),
               GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(RouteSetting.signUp);
                   },
                   child: Text(
-                    "Dont have account? Sign up",
+                    context.loc.dontHaveAccountSignUp,
                     style: TextStyle(color: CustomAppTheme.colorWhite),
                   ))
             ],

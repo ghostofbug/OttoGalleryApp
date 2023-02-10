@@ -28,7 +28,7 @@ def keystoreProperties = new Properties()
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin  g'com.google.gms.google-services'
+apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 
@@ -84,7 +84,7 @@ android {
             applicationIdSuffix ".test"
             versionCode 1
             versionName "0.0.1"
-            resValue "string", "app_name", "Gallery App"
+            resValue "string", "app_name", "(T)Gallery App"
         }
         prod {
             dimension "default"
@@ -104,4 +104,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
+    implementation 'com.android.support:multidex:1.0.3'
 }

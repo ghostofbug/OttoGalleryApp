@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -35,7 +33,9 @@ class AppLogger {
         body   : ${parameter.toString()}
         result:  ${result}
     """;
-    logger.v(loggedString,);
+    logger.v(
+      loggedString,
+    );
   }
 
   static void buttonActionLog(String buttonName, String screenName) {
@@ -55,20 +55,20 @@ class CustomLogOutput extends LogOutput {
     return directory.path;
   }
 
-  Future<File> get _logfile async {
-    final path = await _localPath;
-    var dateTimeNow = DateTime.now();
-    var fileName = DateFormat("yyyy-MM-dd").format(dateTimeNow);
-    return File('$path/${fileName}.txt');
-  }
+  // Future<File> get _logfile async {
+  //   final path = await _localPath;
+  //   var dateTimeNow = DateTime.now();
+  //   var fileName = DateFormat("yyyy-MM-dd").format(dateTimeNow);
+  //   return File('$path/${fileName}.txt');
+  // }
 
-  Future<void> deleteFile() async {
-    try {
-      final file = await _logfile;
+  // Future<void> deleteFile() async {
+  //   try {
+  //     final file = await _logfile;
 
-      await file.delete();
-    } catch (e) {}
-  }
+  //     await file.delete();
+  //   } catch (e) {}
+  // }
 
   @override
   void output(OutputEvent event) async {

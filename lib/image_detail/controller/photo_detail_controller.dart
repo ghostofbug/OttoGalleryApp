@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/common/extension.dart';
-import 'package:gallery_app/model/image_dataset/image_dataset.dart';
+import 'package:gallery_app/model/photo_model/photo_model.dart';
+
 import '../../common/colors.dart';
 import '../../common/storage_controller.dart';
 import '../../provider/provider.dart';
 
-class ImageDetailController {
+class PhotoDetailController {
   final BuildContext context;
   final WidgetRef ref;
-  final ImageDataset image;
+  final Photo photo;
 
-  ImageDetailController(
-      {required this.context, required this.ref, required this.image});
+  PhotoDetailController(
+      {required this.context, required this.ref, required this.photo});
 
   void onClickFavourite(bool isFavourite) async {
     if (isFavourite) {
-      await StorageController.database?.imageDao.insertFavouriteImage(image);
-      ref.read(favouriteImageListProvider.notifier).addItem(image);
+      await StorageController.database?.imageDao.insertFavouritePhoto(photo);
+      ref.read(favouritePhotoListProvider.notifier).insertAtHead(photo);
     } else {
-      await StorageController.database?.imageDao.deleteFavouriteImage(image);
-      ref.read(favouriteImageListProvider.notifier).removeItem(image);
+      await StorageController.database?.imageDao.deleteFavouritePhoto(photo);
+      ref.read(favouritePhotoListProvider.notifier).insertAtHead(photo);
     }
   }
 
@@ -65,7 +66,7 @@ class ImageDetailController {
                         ),
                         Expanded(
                           child: Text(
-                            image.createdAt ?? "-",
+                            photo.createdAt ?? "-",
                             style: TextStyle(color: CustomAppTheme.colorWhite),
                           ),
                         )
@@ -79,13 +80,13 @@ class ImageDetailController {
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.5,
                           child: Text(
-                           context.loc.description,
+                            context.loc.description,
                             style: TextStyle(color: CustomAppTheme.colorWhite),
                           ),
                         ),
                         Expanded(
                           child: Text(
-                            image.description ?? "-",
+                            photo.description ?? "-",
                             style: TextStyle(color: CustomAppTheme.colorWhite),
                           ),
                         )
@@ -105,7 +106,7 @@ class ImageDetailController {
                         ),
                         Expanded(
                           child: Text(
-                            image.imageUrls?.raw ?? "-",
+                            photo.imageUrls?.raw ?? "-",
                             style: TextStyle(color: CustomAppTheme.colorWhite),
                           ),
                         )
@@ -119,13 +120,13 @@ class ImageDetailController {
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.5,
                           child: Text(
-                           context.loc.dimension,
+                            context.loc.dimension,
                             style: TextStyle(color: CustomAppTheme.colorWhite),
                           ),
                         ),
                         Expanded(
                           child: Text(
-                            '${image.width} x ${image.height}',
+                            '${photo.width} x ${photo.height}',
                             style: TextStyle(color: CustomAppTheme.colorWhite),
                           ),
                         )
