@@ -31,7 +31,7 @@ Please note: .env file is for demo purpose. In realife, it should be include in 
 
 ## Limitation
 - User favourite not sync to server when user sign in. It's only store at local device 
-- Public Image API restriction quota: 50 request/hour (unsplash api)
+- Public Image API restriction quota: 50 request/hour (unsplash api) (around 500 photo can fetch 1 hours)
 
 ## Project Structure 
 - Android: Android project of app
