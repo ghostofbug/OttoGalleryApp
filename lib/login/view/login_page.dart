@@ -18,11 +18,8 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  
-
   late LoginController loginController =
       LoginController(context: context, ref: ref);
-      
 
   @override
   void initState() {
@@ -115,7 +112,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   customWidth: MediaQuery.of(context).size.width,
                   customHeight: ComponentSize.buttonHeight,
                   backgroundColor: CustomAppTheme.colorWhite,
-                  onPressed: () async {},
+                  onPressed: () async {
+                    loginController.signIn();
+                  },
                   textColor: CustomAppTheme.colorBlack,
                   buttonText: context.loc.login),
               SizedBox(

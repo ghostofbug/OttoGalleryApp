@@ -57,7 +57,7 @@ class _HomePageState extends ConsumerState<HomePage>
             physics: ClampingScrollPhysics(),
             controller: homeController.photoScrollController,
             key: PageStorageKey(0),
-            cacheExtent: MediaQuery.of(context).size.height,
+            cacheExtent: MediaQuery.of(context).size.height * photoList.length,
             itemCount: photoList.length + 1,
             itemBuilder: ((context, index) {
               if (index == photoList.length) {
